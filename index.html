@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAIZEN Sushi - Demo de Menú Interactivo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" id="theme-color-meta" content="#FFFFFF">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KAIZEN">
+    <link rel="icon" href="./favicon.png" type="image/png">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class', // Habilitar modo oscuro
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'dark-bg': '#171717',     // Negro-Gris Principal (Neutral 900)
+                        'dark-card': '#262626',   // Gris para Tarjetas (Neutral 800)
+                        'dark-border': '#404040', // Borde sutil (Neutral 700)
+                        'brand': {
+                            'primary': '#DC2626', // Rojo
+                            'secondary': '#1F2937', // Gris Oscuro
+                            'light': '#F9FAFB',     // Gris Claro
+                            'white': '#FFFFFF',
+                        }
+                    },
+                    boxShadow: {
+                        'top': '0 -4px 6px -1px rgb(0 0 0 / 0.1), 0 -2px 4px -2px rgb(0 0 0 / 0.1)',
+                        'dark-top': '0 -4px 6px -1px rgb(255 255 255 / 0.05)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script>
+    (function() {
+        const CART_STORAGE_KEY = 'kaizenSushiCart'; 
+        try {
+            const storedCart = localStorage.getItem(CART_STORAGE_KEY);
+            if (storedCart && JSON.parse(storedCart).length > 0) {
+                document.documentElement.classList.add('app-cargada');
+            }
+        } catch (e) {
+            console.warn('Error al revisar el carrito en pre-carga.');
+        }
+    })();
+</script>
+</head>
+
+<body class="bg-brand-light m-0 p-0 transition-colors duration-300 no-select">
+
+    <div class="max-w-md mx-auto h-dvh bg-brand-white shadow-2xl flex flex-col overflow-hidden dark:bg-dark-bg">
+        <section id="hero-screen" class="h-full flex-shrink-0 parallax-hero flex flex-col justify-between text-brand-white">
+            <div class="relative z-10 flex flex-col h-full p-8 text-center">
+                <div class="flex-grow flex flex-col items-center justify-center space-y-4">
+                    <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18v.01M6.314 15.186l.01.01M17.686 15.186l.01.01M21 12v.01M3 12v.01M17.686 8.814l.01.01M6.314 8.814l.01.01M12 6v.01M12 3v.01"></path></svg>
+                    <h1 id="hero-restaurant-name" class="text-5xl font-extrabold tracking-tight"></h1>
+                    <p id="hero-slogan" class="text-xl font-light"></p>
+                </div>
+                <div class="flex-shrink-0">
+                    <button id="start-button" class="tap-press w-full bg-brand-primary text-brand-white font-bold py-4 px-6 rounded-lg shadow-lg text-lg transform transition-transform duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary">
+                        Arma tu Experiencia
+                    </button>
+                    <p class="text-xs mt-4 opacity-70">La nueva forma de pedir</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="app-screen" class="h-full flex-grow flex flex-col relative">
+            
+            <header class="flex-shrink-0 flex items-center justify-between p-4 bg-brand-white border-b border-gray-200 dark:bg-dark-bg dark:border-dark-border">
+                <div>
+                    <h1 id="restaurant-name" class="text-2xl font-bold text-brand-secondary dark:text-white"></h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Tu Menú Interactivo</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button id="install-pwa-btn" class="tap-press hidden p-2 rounded-full hover:bg-gray-100 dark:hover:bg-dark-border transition-colors focus:outline-none" title="Instalar Aplicación">
+                        <svg class="w-6 h-6 text-brand-secondary dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    </button>
+                    <button id="theme-toggle" class="tap-press p-2 rounded-full hover:bg-gray-100 dark:hover:bg-dark-border transition-colors focus:outline-none">
+                        <svg id="theme-icon-sun" class="w-6 h-6 text-brand-secondary dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <svg id="theme-icon-moon" class="w-6 h-6 text-brand-secondary dark:text-gray-300 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </button>
+                    <button id="cart-button" class="tap-press relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-dark-border transition-colors">
+                        <svg class="w-6 h-6 text-brand-secondary dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 12H6L5 9z"></path></svg>
+                        <span id="cart-count" class="hidden absolute -top-1 -right-1 bg-brand-primary text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
+                    </button>
+                </div>
+            </header>
+
+            <nav id="menus-nav" class="relative overflow-x-auto no-scrollbar flex items-center space-x-2 p-2 bg-gray-50 border-b border-gray-200 dark:bg-dark-card dark:border-dark-border">
+                <button id="menus-scroll-left" class="menu-scroll-indicator left hidden" aria-hidden="true">‹</button>
+                <!-- Menús generados dinámicamente desde db.json -->
+                <button id="menus-scroll-right" class="menu-scroll-indicator right hidden" aria-hidden="true">›</button>
+            </nav>
+
+            <main class="flex-grow overflow-y-auto no-scrollbar pb-32">
+                
+                <div id="builder-panel" class="tab-panel p-4 space-y-6">
+                    <section>
+                        <h2 class="text-xl font-bold mb-3 dark:text-white"></h2>
+                        <div id="builder-base-container" class="grid grid-cols-2 gap-3"></div>
+                    </section>
+
+                    <section>
+                        <h2 class="text-xl font-bold mb-3 dark:text-white"></h2>
+                        <div id="builder-protein-container" class="grid grid-cols-2 gap-3"></div>
+                    </section>
+
+                    <section>
+                        <h2 class="text-xl font-bold mb-3 dark:text-white"></h2>
+                        <div id="builder-filling-container" class="grid grid-cols-2 gap-3"></div>
+                    </section>
+
+                    <section>
+                        <h2 class="text-xl font-bold mb-3 dark:text-white"></h2>
+                        <div id="builder-topping-container" class="grid grid-cols-2 gap-3"></div>
+                    </section>
+                </div>
+
+                <div id="gallery-panel" class="tab-panel p-4 space-y-4 hidden">
+                    <div id="gallery-list" class="space-y-3"></div>
+                </div>
+
+                <div id="drinks-panel" class="tab-panel p-4 space-y-4 hidden">
+                    <div id="drinks-list" class="space-y-3"></div>
+                </div>
+
+            </main>
+
+            <footer id="builder-footer" class="absolute bottom-0 left-0 right-0 w-full max-w-md mx-auto bg-brand-white dark:bg-dark-card p-4 shadow-top dark:shadow-dark-top dark:border-t dark:border-dark-border rounded-t-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Tu Creación:</p>
+                        <p id="builder-summary-price" class="text-2xl font-extrabold text-brand-secondary dark:text-white">$0.00</p>
+                    </div>
+                    <button id="add-custom-roll-btn" class="tap-press bg-brand-primary text-brand-white font-bold py-3 px-6 rounded-lg shadow-lg text-lg transform transition-transform duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        Añadir
+                    </button>
+                </div>
+                <div id="builder-summary-items" class="text-xs text-gray-500 dark:text-gray-400 mt-2 truncate">
+                    ...
+                </div>
+            </footer>
+        </section>
+
+        <div id="cart-modal" class="hidden fixed inset-0 max-w-md mx-auto h-dvh z-40 modal-fade-in">            <div id="cart-overlay" class="absolute inset-0 bg-black opacity-50"></div>
+            
+            <div class="absolute bottom-0 left-0 right-0 h-[90%] bg-brand-light dark:bg-dark-bg rounded-t-xl flex flex-col modal-slide-in">
+                <header class="flex-shrink-0 flex items-center justify-between p-4 border-b border-gray-200 bg-brand-white dark:bg-dark-card dark:border-dark-border rounded-t-xl">
+                    <h2 class="text-2xl font-bold dark:text-white">Tu Pedido</h2>
+                    
+                    <div class="flex items-center space-x-2">
+                        <button id="clear-cart-btn" class="tap-press hidden text-sm font-semibold text-red-600 dark:text-red-500 hover:text-red-800 dark:hover:text-red-400 transition-colors">
+                            Vaciar Carrito
+                        </button>
+                        <button id="close-cart-btn" class="tap-press p-2 rounded-full hover:bg-gray-100 dark:hover:bg-dark-border">
+                            <svg class="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                </header>
+
+                <div id="cart-items-list" class="flex-grow p-4 space-y-3 overflow-y-auto no-scrollbar overscroll-contain">                    <p class="text-gray-500 dark:text-gray-400 text-center py-10">Tu carrito está vacío.</p>
+                </div>
+
+                <footer class="flex-shrink-0 p-4 bg-brand-white dark:bg-dark-card shadow-top dark:shadow-dark-top dark:border-t dark:border-dark-border rounded-t-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-lg font-medium text-gray-600 dark:text-gray-300">Total:</span>
+                        <span id="cart-total-price" class="text-3xl font-extrabold text-brand-secondary dark:text-white">$0.00</span>
+                    </div>
+                    <button id="place-order-btn" class="tap-press w-full bg-brand-primary text-brand-white font-bold py-4 px-6 rounded-lg shadow-lg text-lg transform transition-transform duration-200 hover:scale-105 disabled:opacity-50">
+                        Confirmar Pedido
+                    </button>
+                </footer>
+            </div>
+        </div>
+
+        <div id="detail-modal" class="hidden fixed inset-0 max-w-md mx-auto h-dvh z-50 modal-fade-in">           <div id="detail-overlay" class="absolute inset-0 bg-black opacity-50"></div>
+            
+            <div class="absolute bottom-0 left-0 right-0 bg-brand-light dark:bg-dark-bg rounded-t-xl flex flex-col modal-slide-in-bottom max-h-[85vh]">
+                <div class="relative">
+                    <img id="detail-modal-image" src="https://placehold.co/400x400/CCCCCC/FFFFFF?text=Sushi" alt="Detalle del rollo" class="w-full h-64 object-cover rounded-t-xl">
+                    <button id="close-detail-btn" class="tap-press absolute top-4 right-4 p-2 bg-black/50 rounded-full text-white hover:bg-black/75">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+
+                <div class="p-6 overflow-y-auto no-scrollbar">
+                    <h2 id="detail-modal-name" class="text-3xl font-bold mb-2 dark:text-white">Nombre del Rollo</h2>
+                    <p id="detail-modal-description" class="text-gray-600 dark:text-gray-300 mb-6">Descripción detallada del producto irá aquí para que el cliente pueda leer todo sobre él.</p>
+                </div>
+
+                <footer class="flex-shrink-0 p-4 bg-brand-white dark:bg-dark-card shadow-top dark:shadow-dark-top dark:border-t dark:border-dark-border">
+                    <div class="flex items-center justify-between">
+                        <span id="detail-modal-price" class="text-3xl font-extrabold text-brand-secondary dark:text-white">$0.00</span>
+                        <button id="detail-modal-add-btn" class="tap-press bg-brand-primary text-brand-white font-bold py-3 px-6 rounded-lg shadow-lg text-lg transform transition-transform duration-200 hover:scale-105">
+                            Añadir al Pedido
+                        </button>
+                    </div>
+                </footer>
+            </div>
+        </div>
+
+        <div id="success-modal" class="hidden fixed inset-0 max-w-md mx-auto h-dvh z-50 modal-fade-in">            <div id="success-overlay" class="absolute inset-0 bg-black opacity-50"></div>
+            
+            <div class="absolute bottom-0 left-0 right-0 bg-brand-light dark:bg-dark-bg rounded-t-xl flex flex-col modal-slide-in-bottom max-h-[85vh]">
+                <div class="p-8 text-center">
+                    <svg class="w-20 h-20 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <h2 class="text-3xl font-bold my-4 dark:text-white">¡Pedido Listo!</h2>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">Se abrira WhatsApp con los detalles de tu pedido, para enviarlo. ¡Gracias por elegir KAIZEN!</p>
+                    <button id="close-success-btn" class="tap-press w-full bg-green-600 hover:bg-green-700 text-brand-white font-bold py-4 px-6 rounded-lg shadow-lg text-lg transition-colors">
+                        Entendido, abrir WhatsApp
+                    </button>
+                    
+                    <button id="cancel-success-btn" class="tap-press w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg text-lg mt-2 transition-colors">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="confirm-modal" class="hidden fixed inset-0 max-w-md mx-auto h-dvh z-50 modal-fade-in">            <div id="confirm-overlay" class="absolute inset-0 bg-black opacity-50"></div>
+            
+            <div class="absolute bottom-0 left-0 right-0 bg-brand-light dark:bg-dark-bg rounded-t-xl flex flex-col modal-slide-in-bottom max-h-[85vh]">
+                <div class="p-8 text-center">
+                    <svg class="w-20 h-20 text-red-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    
+                    <h2 class="text-3xl font-bold my-4 dark:text-white">¿Estás seguro?</h2>
+                    
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">Esta acción eliminará todos los productos de tu carrito. No podrás deshacerlo.</p>
+
+                    <button id="confirm-clear-btn" class="tap-press w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-lg shadow-lg text-lg transition-colors">
+                        Sí, vaciar carrito
+                    </button>
+                    
+                    <button id="cancel-clear-btn" class="tap-press w-full text-gray-600 dark:text-gray-400 font-bold py-3 px-6 rounded-lg text-lg mt-2 hover:bg-gray-200 dark:hover:bg-dark-border transition-colors">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="toaster" class="fixed top-4 left-1/2 -translate-x-1/2 z-[45] bg-brand-secondary dark:bg-brand-light text-white dark:text-brand-secondary font-semibold py-3 px-5 rounded-lg shadow-lg opacity-0 transition-all duration-150 transform -translate-y-3 pointer-events-none">
+            <span id="toaster-message">¡Añadido!</span>
+        </div>
+
+    </div> <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+/* Fuente Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Efecto Parallax Simple para el Hero */
+.parallax-hero {
+    /* background-image: url('https://placehold.co/1000x1500/202020/FFFFFF?text=KAIZEN+SUSHI'); */
+    background-color: black;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}
+
+/* Degradado superpuesto para legibilidad */
+.parallax-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 20%, rgba(0,0,0,0.2) 60%);
+}
+
+/* Ocultar scrollbars */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+/* Animación de entrada para modales */
+.modal-fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+.modal-slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+/* Animación para el modal de detalle */
+.modal-slide-in-bottom {
+    animation: slideInBottom 0.3s ease-out;
+}
+@keyframes slideInBottom {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+#app-screen {
+    display: none;
+}
+
+/* Si el script del head tiene éxito y añade la clase... */
+html.app-cargada #hero-screen {
+    display: none; /* Oculta el hero */
+}
+html.app-cargada #app-screen {
+    display: flex; /* Muestra la app (porque tu app usa flex) */
+}
+
+#hero-restaurant-name:empty, 
+#hero-slogan:empty,
+#restaurant-name:empty {
+    opacity: 0;
+}
+/* Transición suave cuando aparezca el texto */
+#hero-restaurant-name, #hero-slogan, #restaurant-name {
+    transition: opacity 0.3s ease;
+    opacity: 1;
+}
+
+
+/* ================================== */
+/* ====   NUEVAS CLASES DE UI/UX   ==== */
+/* ================================== */
+
+/* 1. Clase para deshabilitar selección de texto y tap-highlight */
+.no-select {
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE */
+    user-select: none; /* Standard */
+    -webkit-tap-highlight-color: transparent; /* Deshabilita el "flash" al tocar en móviles */
+}
+
+/* 2. Clase para efecto de "presionar" (feedback táctil) */
+.tap-press {
+    /* Define la transición que se animará */
+    transition-property: transform;
+    transition-duration: 75ms; /* Muy rápido, solo para el feedback */
+    transition-timing-function: ease-out;
+}
+
+.tap-press:active {
+    /* La acción: encogerse un 5% al presionar */
+    transform: scale(0.95);
+}
+
+/* Menus nav horizontal scrolling and indicators */
+#menus-nav {
+    -webkit-overflow-scrolling: touch;
+}
+.menu-scroll-indicator {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    pointer-events: auto;
+    font-size: 22px;
+    color: rgba(17,24,39,0.9); /* gray-900 */
+    background: linear-gradient(to right, rgba(255,255,255,0.95), rgba(255,255,255,0));
+    transition: opacity 0.15s ease;
+}
+.menu-scroll-indicator.right {
+    right: 0;
+    transform: rotate(0deg);
+    background: linear-gradient(to left, rgba(255,255,255,0.95), rgba(255,255,255,0));
+}
+.menu-scroll-indicator.left { left: 0; }
+.menu-scroll-indicator.hidden { display: none; }
+
+/* Dark mode adjustments for indicators */
+.dark .menu-scroll-indicator { color: rgba(255,255,255,0.92); background: linear-gradient(to right, rgba(18,18,18,0.95), rgba(18,18,18,0)); }
+.dark .menu-scroll-indicator.right { background: linear-gradient(to left, rgba(18,18,18,0.95), rgba(18,18,18,0)); }
